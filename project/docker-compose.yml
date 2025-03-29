@@ -1,0 +1,47 @@
+services:
+  todo-service:
+    build:
+      context: ./../todo-service/
+      dockerfile: ./../todo-service/todo-service.dockerfile 
+    container_name: "todo-service"
+    restart: always
+    ports:
+      - "8081:8081"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  todo-app:
+    build:
+      context: ./../todo-app/
+      dockerfile: ./../todo-app/todo-app-prod.dockerfile 
+    container_name: "todo-app-prod"
+    restart: always
+    ports:
+      - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  logger-service:
+    build:
+      context: ./../logger-service/
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    ports:
+      - "8082:8082"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    container_name: "todo-mongo-database"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: todo
+    volumes:
+      - ./db-data/mongo:/data/db
